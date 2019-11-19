@@ -11,7 +11,7 @@ set -o pipefail
 : "${GIT_REPOSITORY_NAME:?Environment variable GIT_REPOSITORY_NAME must be set}"
 
 readonly REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel)}"
-IMG ?= flink-operator:latest
+IMG="${IMG:-flink-operator:latest}"
 
 main() {
     pushd "$REPO_ROOT" > /dev/null
