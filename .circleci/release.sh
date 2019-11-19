@@ -86,6 +86,7 @@ update_index() {
 
     rm -rf flink-on-k8s-operator
     git commit -am "Update CRDs"
+    git push orign master
 
     for file in charts/*/*.md; do
         if [[ -e $file ]]; then
