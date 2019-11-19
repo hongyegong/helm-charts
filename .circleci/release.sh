@@ -11,6 +11,7 @@ set -o pipefail
 : "${GIT_REPOSITORY_NAME:?Environment variable GIT_REPOSITORY_NAME must be set}"
 
 readonly REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel)}"
+IMG ?= flink-operator:latest
 
 main() {
     pushd "$REPO_ROOT" > /dev/null
@@ -44,7 +45,7 @@ main() {
 
     if [[ -n "${changed_charts[*]}" ]]; then
         git clone https://github.com/GoogleCloudPlatform/flink-on-k8s-operator.git
-        mv flink-on-k8s-operator/config/default/manager_image_patch.template flink-on-k8s-operator/config/default/manager_image_patch.yaml
+        sed -e 's#image: .*#image: '"${IMG}"'#' ./config/default/manager_image_patch.template >./config/default/manager_image_patch.yaml
         kustomize build flink-on-k8s-operator/config/default | tee flink-operator.yaml
         mv flink-operator.yaml charts/app/templates/flink-operator.yaml
         cp flink-on-k8s-operator/config/crd/bases/flinkoperator.k8s.io_flinkclusters.yaml charts/app/templates/flink-cluster-crd.yaml
@@ -86,6 +87,7 @@ update_index() {
     git config user.name "$GIT_USERNAME"
 
     rm -rf flink-on-k8s-operator
+    git checkout master
     git commit -am "Update CRDs"
     git push "$GIT_REPOSITORY_URL" master
 
