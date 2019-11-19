@@ -44,6 +44,7 @@ main() {
 
     if [[ -n "${changed_charts[*]}" ]]; then
         git clone https://github.com/GoogleCloudPlatform/flink-on-k8s-operator.git
+        mv flink-on-k8s-operator/config/default/manager_image_patch.template flink-on-k8s-operator/config/default/manager_image_patch.yaml
         kustomize build flink-on-k8s-operator/config/default | tee flink-operator.yaml
         mv flink-operator.yaml charts/app/templates/flink-operator.yaml
         cp flink-on-k8s-operator/config/crd/bases/flinkoperator.k8s.io_flinkclusters.yaml charts/app/templates/flink-cluster-crd.yaml
