@@ -43,6 +43,10 @@ main() {
     readarray -t changed_charts <<< "$(git diff --find-renames --name-only "$latest_tag_rev" -- charts | cut -d '/' -f 2 | uniq)"
 
     if [[ -n "${changed_charts[*]}" ]]; then
+        git clone https://github.com/GoogleCloudPlatform/flink-on-k8s-operator.git
+        kustomize build flink-on-k8s-operator/config/default | tee flink-operator.yaml
+        mv flink-operator.yaml charts/app/templates/flink-operator.yaml
+        cp flink-on-k8s-operator/config/crd/bases/flinkoperator.k8s.io_flinkclusters.yaml charts/app/templates/flink-cluster-crd.yaml
         for chart in "${changed_charts[@]}"; do
             echo "Packaging chart '$chart'..."
             package_chart "charts/$chart"
@@ -79,6 +83,9 @@ update_index() {
 
     git config user.email "$GIT_EMAIL"
     git config user.name "$GIT_USERNAME"
+
+    rm -rf flink-on-k8s-operator
+    git commit -am "Update CRDs"
 
     for file in charts/*/*.md; do
         if [[ -e $file ]]; then
