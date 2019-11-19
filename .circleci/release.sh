@@ -87,6 +87,7 @@ update_index() {
         fi
     done
 
+    git stash
     git checkout gh-pages
     cp --force .deploy/index.yaml index.yaml
 
