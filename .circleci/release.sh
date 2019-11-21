@@ -88,9 +88,13 @@ update_index() {
 
     rm -rf flink-on-k8s-operator
     git checkout master
-    git add .
-    git commit -m "Update CRDs"
-    git push "$GIT_REPOSITORY_URL" master
+    if [ -z "$(git status --porcelain)" ]; then
+      echo "nothing to commit."
+    else
+      git add .
+      git commit -m "Update CRDs"
+      git push "$GIT_REPOSITORY_URL" master
+    fi
 
     for file in charts/*/*.md; do
         if [[ -e $file ]]; then
